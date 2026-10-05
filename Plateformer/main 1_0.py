@@ -1,5 +1,9 @@
 import pygame, sys
 
+# Définition des fonctions du jeu
+
+# Initialisation de Pygame et création de la fenêtre
+
 pygame.init()
 pygame.joystick.init() #initialisation de la manette
 controller = None
@@ -14,6 +18,8 @@ bouton_y = 3
 screen = pygame.display.set_mode((1024, 576))
 clock = pygame.time.Clock()
 dt = 0
+
+# Définition des variables du jeu
 
 # Le rectangle du sol
 floor_rect = pygame.Rect(0, 526, 1024, 50)
