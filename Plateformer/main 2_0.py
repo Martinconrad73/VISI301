@@ -22,11 +22,11 @@ direct= 0
 screen = pygame.display.set_mode((1024, 576))
 clock = pygame.time.Clock()
 dt = 0
-image = pygame.transform.scale(pygame.image.load("Plateformer/img/immobile.png").convert_alpha(), (80, 80))
+image = pygame.transform.scale(pygame.image.load("img/immobile.png").convert_alpha(), (80, 80))
+tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png", "10": "img/immobile.png", "11": "img/saut_d.png", "12": "img/saut_g.png"}
 
 # Le rectangle du sol
 floor_rect = pygame.Rect(0, 526, 1024, 50)
-tab_pos = {"0" : "Plateformer/img/immobile.png", "1": "Plateformer/img/droite.png", "2": "Plateformer/img/gauche.png", "10": "Plateformer/img/immobile.png", "11": "Plateformer/img/saut_d.png", "12": "Plateformer/img/saut_g.png"}
 
 # Création des plateformes (x, y, largeur, hauteur)
 plateformes_bleues = [pygame.Rect(200, 400, 150, 20), pygame.Rect(600, 200, 150, 20)]
