@@ -22,11 +22,11 @@ direct= 0
 screen = pygame.display.set_mode((1024, 576))
 clock = pygame.time.Clock()
 dt = 0
-image = pygame.transform.scale(pygame.image.load("img/immobile.png").convert_alpha(), (80, 80))
+image = pygame.transform.scale(pygame.image.load("Plateformer/img/immobile.png").convert_alpha(), (80, 80))
 
 # Le rectangle du sol
 floor_rect = pygame.Rect(0, 526, 1024, 50)
-tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png", "10": "img/immobile.png", "11": "img/saut_d.png", "12": "img/saut_g.png"}
+tab_pos = {"0" : "Plateformer/img/immobile.png", "1": "Plateformer/img/droite.png", "2": "Plateformer/img/gauche.png", "10": "Plateformer/img/immobile.png", "11": "Plateformer/img/saut_d.png", "12": "Plateformer/img/saut_g.png"}
 
 # Création des plateformes (x, y, largeur, hauteur)
 plateformes_bleues = [pygame.Rect(200, 400, 150, 20), pygame.Rect(600, 200, 150, 20)]
@@ -38,6 +38,7 @@ bleu_actif = True
 
 player_rect = image.get_rect(topleft=(50, 400))
 gravite = 0
+vitesse_x = 0
 
 while True:
     # 1. DÉFINITION DES OBSTACLES ACTIFS
@@ -86,31 +87,54 @@ while True:
     player_rect.y += gravite
 
     # 2. LA DÉTECTION DE COLLISION (sur la liste des obstacles)
+
     for obstacle in obstacles_solides:
         if player_rect.colliderect(obstacle):
-            if gravite >= 0: # Si le joueur tombe vers le bas
+            
+            # Si le joueur tombe (mouvement vers le bas)
+            if gravite > 0: 
                 player_rect.bottom = obstacle.top
-                gravite = 0
+                gravite = 0 # Stoppe la chute pour le faire rester sur la plateforme
+                
+            # Si le joueur saute et tape sa tête (mouvement vers le haut)
+            elif gravite < 0: 
+                player_rect.top = obstacle.bottom
+                gravite = 0 # Stoppe l'ascension pour le faire retomber
+
+    player_rect.x += vitesse_x
+
+    for obstacle in obstacles_solides:
+        if player_rect.colliderect(obstacle):
+            # Si on va vers la droite, on tape le mur par la gauche de l'obstacle
+            if vitesse_x > 0:
+                player_rect.right = obstacle.left
+            
+            # Si on va vers la gauche, on tape le mur par la droite de l'obstacle
+            elif vitesse_x < 0:
+                player_rect.left = obstacle.right
+
     if controller is None : 
-        keys = pygame.key.get_pressed() 
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_q]:
             direct=2
-            player_rect.x -= 300 * dt
+            vitesse_x = -300 * dt
         elif keys[pygame.K_d]:
             direct=1
-            player_rect.x += 300 * dt
+            vitesse_x = 300 * dt
         else:
             direct=0
+            vitesse_x = 0
     else :
         hat_x, hat_y = controller.get_hat(0)
         if hat_x == -1:  # Croix vers la gauche
-            player_rect.x -= 300 * dt
+            vitesse_x = -300 * dt
             direct=2
         elif hat_x == 1:  # Croix vers la droite
-            player_rect.x += 300 * dt
+            vitesse_x = 300 * dt
             direct=1
         else:
             direct=0
+            vitesse_x = 0
     
     # --- AFFICHAGE ---
     screen.fill((50, 50, 50))
