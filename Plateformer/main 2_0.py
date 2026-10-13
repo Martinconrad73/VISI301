@@ -1,6 +1,54 @@
 import pygame, sys
 
-# Définition des fonctions du jeu
+# Définition des fonctions du jeu (NE PLUS TOUCHER, sauf si nécessaire, ELLES SONT DÉJÀ COMPLÈTES)
+
+def dessiner_plateformes_bleues():
+    for plat in plateformes_bleues:
+        if bleu_actif:
+            pygame.draw.rect(screen, (100, 150, 255), plat) # Pleine
+        else:
+            pygame.draw.rect(screen, (100, 150, 255), plat, 2) # Vide (juste le contour)
+
+def dessiner_plateformes_rouges():
+    for plat in plateformes_rouges:
+        if not bleu_actif:
+            pygame.draw.rect(screen, (255, 100, 100), plat) # Pleine
+        else:
+            pygame.draw.rect(screen, (255, 100, 100), plat, 2) # Vide (juste le contour)
+
+def collisions_verticales(gravite):
+    for obstacle in obstacles_solides:
+        if player_rect.colliderect(obstacle):
+            # Si le joueur tombe (mouvement vers le bas)
+            if gravite > 0: 
+                player_rect.bottom = obstacle.top
+                gravite = 0 # Stoppe la chute pour le faire rester sur la plateforme
+                
+            # Si le joueur saute et tape sa tête (mouvement vers le haut)
+            elif gravite < 0: 
+                player_rect.top = obstacle.bottom
+                gravite = 0 # Stoppe l'ascension pour le faire retomber
+    return gravite #Il est nécessaire de retourner gravité car elle est modifiée dans la fonction. (C'est pas une procédure avec une valeur in out, merci ADA)
+
+def collisions_horizontales(vitesse_x):
+    for obstacle in obstacles_solides:
+        if player_rect.colliderect(obstacle):
+            # Si on va vers la droite, on tape le mur par la gauche de l'obstacle
+            if vitesse_x > 0:
+                player_rect.right = obstacle.left
+            
+            # Si on va vers la gauche, on tape le mur par la droite de l'obstacle
+            elif vitesse_x < 0:
+                player_rect.left = obstacle.right # Il n'est pas nécessaire de retourner vitesse_x, car on ne la modifie pas.
+
+def victory():
+    font = pygame.font.Font(None, 74)
+    text = font.render("Gagné !", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(512, 288))
+    fond = pygame.Surface((1024, 576))
+    fond.set_alpha(128)  # Transparence
+    screen.blit(fond, (0, 0))
+    screen.blit(text, text_rect)
 
 # Initialisation de Pygame et création de la fenêtre
 
@@ -13,7 +61,7 @@ if pygame.joystick.get_count() > 0:
 bouton_X = 2
 bouton_A = 0
 bouton_B = 1
-bouton_y = 3
+bouton_Y = 3
 
 # Définition des variables du jeu
 
@@ -25,13 +73,17 @@ dt = 0
 image = pygame.transform.scale(pygame.image.load("img/immobile.png").convert_alpha(), (80, 80))
 tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png", "10": "img/immobile.png", "11": "img/saut_d.png", "12": "img/saut_g.png"}
 
+# TOUT CE QUI EST ICI DEVRA DISPARAITRE DANS LA VERSION FINALE, C'EST JUSTE POUR TESTER LE JEU
+
 # Le rectangle du sol
 floor_rect = pygame.Rect(0, 526, 1024, 50)
 
 # Création des plateformes (x, y, largeur, hauteur)
 plateformes_bleues = [pygame.Rect(200, 400, 150, 20), pygame.Rect(600, 200, 150, 20)]
 plateformes_rouges = [pygame.Rect(400, 300, 150, 20), pygame.Rect(800, 400, 150, 20)]
-plateforme_jaune = pygame.Rect(500, 100, 150, 20)
+plateforme_jaune = pygame.Rect(425, 75, 150, 20)
+
+# Jusqu'ici. À moins de s'en servir pour créer l'écran de start (éléments de déco, pourquoi pas...)
 
 # État du jeu : True = Bleu solide, False = Rouge solide
 bleu_actif = True 
@@ -88,30 +140,15 @@ while True:
 
     # 2. LA DÉTECTION DE COLLISION (sur la liste des obstacles)
 
-    for obstacle in obstacles_solides:
-        if player_rect.colliderect(obstacle):
-            
-            # Si le joueur tombe (mouvement vers le bas)
-            if gravite > 0: 
-                player_rect.bottom = obstacle.top
-                gravite = 0 # Stoppe la chute pour le faire rester sur la plateforme
-                
-            # Si le joueur saute et tape sa tête (mouvement vers le haut)
-            elif gravite < 0: 
-                player_rect.top = obstacle.bottom
-                gravite = 0 # Stoppe l'ascension pour le faire retomber
+    # On vérifie les collisions verticales
 
+    gravite = collisions_verticales(gravite) #Ici, on est obligé de récupérer la valeur de gravité, car sinon le joueur accumulerait la gravité et tomberait à travers les plateformes.
+
+    # On vérifie les collisions horizontales
+    
     player_rect.x += vitesse_x
 
-    for obstacle in obstacles_solides:
-        if player_rect.colliderect(obstacle):
-            # Si on va vers la droite, on tape le mur par la gauche de l'obstacle
-            if vitesse_x > 0:
-                player_rect.right = obstacle.left
-            
-            # Si on va vers la gauche, on tape le mur par la droite de l'obstacle
-            elif vitesse_x < 0:
-                player_rect.left = obstacle.right
+    collisions_horizontales(vitesse_x) #Par contre ici, on ne récupère pas la valeur de vitesse_x, car on ne la modifie pas dans la fonction.
 
     if controller is None : 
         keys = pygame.key.get_pressed()
@@ -137,28 +174,26 @@ while True:
             vitesse_x = 0
     
     # --- AFFICHAGE ---
+
     screen.fill((50, 50, 50))
     
     # On dessine le sol (gris clair)
+
     pygame.draw.rect(screen, (100, 100, 100), floor_rect)
     
     # DESSIN DES PLATEFORMES BLEUES
-    for plat in plateformes_bleues:
-        if bleu_actif:
-            pygame.draw.rect(screen, (100, 150, 255), plat) # Pleine
-        else:
-            pygame.draw.rect(screen, (100, 150, 255), plat, 2) # Vide (juste le contour)
+
+    dessiner_plateformes_bleues()
 
     # DESSIN DES PLATEFORMES ROUGES
-    for plat in plateformes_rouges:
-        if not bleu_actif:
-            pygame.draw.rect(screen, (255, 100, 100), plat) # Pleine
-        else:
-            pygame.draw.rect(screen, (255, 100, 100), plat, 2) # Vide (juste le contour)
 
-    # On dessine le joueur (en blanc pour contraster)
+    dessiner_plateformes_rouges()
+
+    # On dessine le joueur
+
     image = pygame.transform.scale(pygame.image.load(tab_pos[str(direct+saut)]).convert_alpha(), (80, 80))
     screen.blit(image, player_rect)
+
     # Dessinn de la plateforme jaune (toujours pleine)
     
     pygame.draw.rect(screen, (255, 255, 100), plateforme_jaune)
@@ -166,10 +201,7 @@ while True:
     # Logique de victoire
 
     if player_rect.bottom == plateforme_jaune.top:
-        font = pygame.font.Font(None, 74)
-        text = font.render("Gagné !", True, (255, 255, 255))
-        text_rect = text.get_rect(center=(512, 288))
-        screen.blit(text, text_rect)
+        victory()
     
     pygame.display.update()
     dt = clock.tick(60) / 1000
