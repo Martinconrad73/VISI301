@@ -8,9 +8,15 @@ class plateform :
         self.l = largeur
         self.c = couleur
         self.m = movible
+    def get_couleur(self):
+        return self.c
+    def get_movible(self):
+        return self.m
+    
     def cree_plat (self):
         self.plat = pygame.Rect(self.x, self.y, self.l, self.h)
-
+    def get_plat(self):
+        return self.plat
     def affiche_plat(self,bleu_act : bool,ecran):
         if self.c == "bleu" :
             if bleu_act:
