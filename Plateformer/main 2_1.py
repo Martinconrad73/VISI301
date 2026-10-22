@@ -1,8 +1,8 @@
-import pygame, sys
+import pygame, sys, time
 from Plateforme import plateform
+from niveau import tableau_niveau
 
-# Définition des fonctions du jeu (NE PLUS TOUCHER, sauf si nécessaire, ELLES SONT DÉJÀ COMPLÈTES)
-tableau_niveau= [{"x":[200,600,400,800,425],"y":[400,200,300,400,75],"l":[150,150,150,150,150],"h":[20,20,20,20,20],"c":["bleu","bleu","rouge","rouge","jaune"],"amovible":[False,False,False,False,False]}]
+   
 # Création des plateformes (x, y, largeur, hauteur)
 def get_niveau(num_niv: int)-> list:
     tab= []
@@ -43,7 +43,14 @@ def victory():
     fond.set_alpha(128)  # Transparence
     screen.blit(fond, (0, 0))
     screen.blit(text, text_rect)
-
+def fin_jeu():
+    font = pygame.font.Font(None, 74)
+    text = font.render("Bravo vous avez finis le jeu !", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(512, 288))
+    fond = pygame.Surface((1024, 576))
+    fond.set_alpha(128)  # Transparence
+    screen.blit(fond, (0, 0))
+    screen.blit(text, text_rect)
 # Initialisation de Pygame et création de la fenêtre
 
 pygame.init()
@@ -71,8 +78,8 @@ tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png
 
 # Le rectangle du sol
 floor_rect = pygame.Rect(0, 526, 1024, 50)
-
-niveau_actuelle = get_niveau(0)
+num_niveau=0
+niveau_actuelle = get_niveau(num_niveau)
 couleur_plat_actu ={"rouge" :[],"bleu": [], "jaune": []}
 for i in niveau_actuelle :
     i.cree_plat()
@@ -187,8 +194,30 @@ while True:
 
     # Logique de victoire
 
+    # Logique de victoire
     if player_rect.bottom == couleur_plat_actu["jaune"][0].top:
         victory()
+        pygame.display.update() 
+        pygame.time.delay(2000) 
+        
+        if len(tableau_niveau) > num_niveau + 1:
+            num_niveau += 1
+            niveau_actuelle = get_niveau(num_niveau)
+            player_rect.topleft = (50, 400)
+            gravite = 0
+            vitesse_x = 0
+            couleur_plat_actu = {"rouge": [], "bleu": [], "jaune": []}
+            for i in niveau_actuelle :
+                i.cree_plat()
+                couleur_plat_actu[i.get_couleur()].append(i.get_plat())
+            bleu_actif = True 
+            
+        else:
+            fin_jeu()
+            pygame.display.update() 
+            pygame.time.delay(5000)
+            pygame.quit()
+            sys.exit()
     
     pygame.display.update()
     dt = clock.tick(60) / 1000
