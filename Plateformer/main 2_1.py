@@ -10,6 +10,7 @@ from niveau import tableau_niveau
 # diverses lettres qui indiquent que ce sont le sol, les plateformes, etc... (On peut en parler avec Baptiste, Simon
 # et Killian qui ont un jeu type Binding of Isaac qui fonctionne sur une grille. aucun risque de mouvement d'ailleurs, 
 # le perso en est complètement détaché, de même que le reste.))
+# - Le code de la manette visi est dispo sur le wiki, il faut qu'on bosse dessus pour l'implémenter
 
    
 # Création des plateformes (x, y, largeur, hauteur)
