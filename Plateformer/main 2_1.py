@@ -2,6 +2,15 @@ import pygame, sys, time
 from Plateforme import plateform
 from niveau import tableau_niveau
 
+
+# Commentaires et recommandations pour la suite du projet : 
+# - Bonne chose qu'on ait un proto fonctionnel, il faut continuer sur cette voie.
+# - possible de réfléchir à des mécaniques supplémentaires, de type double jump, dash, 3 couleurs au lieu de 2, etc...
+# - implémentation des niveaux à améliorer pour simplifier le fonctionnement (une grille de type mat ou txt qui prenne 
+# diverses lettres qui indiquent que ce sont le sol, les plateformes, etc... (On peut en parler avec Baptiste, Simon
+# et Killian qui ont un jeu type Binding of Isaac qui fonctionne sur une grille. aucun risque de mouvement d'ailleurs, 
+# le perso en est complètement détaché, de même que le reste.))
+
    
 # Création des plateformes (x, y, largeur, hauteur)
 def get_niveau(num_niv: int)-> list:
