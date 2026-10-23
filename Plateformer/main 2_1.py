@@ -213,9 +213,14 @@ while True:
             bleu_actif = True 
             
         else:
+            screen.fill((50, 50, 50))
+            pygame.draw.rect(screen, (100, 100, 100), floor_rect)
+            for i in niveau_actuelle:
+                i.affiche_plat(bleu_actif, screen)
+            screen.blit(image, player_rect)
             fin_jeu()
             pygame.display.update() 
-            pygame.time.delay(5000)
+            pygame.time.delay(5000) 
             pygame.quit()
             sys.exit()
     
