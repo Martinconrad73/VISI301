@@ -86,8 +86,9 @@ tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png
 
 # TOUT CE QUI EST ICI DEVRA DISPARAITRE DANS LA VERSION FINALE, C'EST JUSTE POUR TESTER LE JEU
 
-# Le rectangle du sol
-floor_rect = pygame.Rect(0, 526, 1024, 50)
+# Les rectangles du sol
+spawn_floor_rect = pygame.Rect(0, 526, 200, 50)  
+lava_rect = pygame.Rect(200, 526, 824, 50)
 num_niveau=0
 niveau_actuelle = get_niveau(num_niveau)
 couleur_plat_actu ={"rouge" :[],"bleu": [], "jaune": []}
@@ -106,7 +107,7 @@ vitesse_x = 0
 while True:
     # 1. DÉFINITION DES OBSTACLES ACTIFS
     # On crée une liste contenant le sol + la couleur actuellement active
-    obstacles_solides = [floor_rect, couleur_plat_actu["jaune"][0]]
+    obstacles_solides = [spawn_floor_rect, couleur_plat_actu["jaune"][0]]
     if bleu_actif:
         obstacles_solides.extend(couleur_plat_actu["bleu"])
     else:
@@ -143,7 +144,11 @@ while True:
                             bleu_actif = not bleu_actif # Inverse l'état (True devient False, et inversement)
                             saut = 0
                             break # On arrête de chercher, on a trouvé le sol
-                    
+    #detection d'une colision avec la lave
+    if player_rect.colliderect(lava_rect):
+        player_rect.topleft = (50, 400)
+        gravite = 0
+        vitesse_x = 0
     # --- LOGIQUE DE MOUVEMENT ---
     
     gravite += 0.5 
@@ -190,7 +195,8 @@ while True:
     
     # On dessine le sol (gris clair)
 
-    pygame.draw.rect(screen, (100, 100, 100), floor_rect)
+    pygame.draw.rect(screen, (100, 100, 100), spawn_floor_rect) 
+    pygame.draw.rect(screen, (139, 0, 0), lava_rect)
     
     
     for i in niveau_actuelle:
@@ -224,7 +230,8 @@ while True:
             
         else:
             screen.fill((50, 50, 50))
-            pygame.draw.rect(screen, (100, 100, 100), floor_rect)
+            pygame.draw.rect(screen, (100, 100, 100), spawn_floor_rect) 
+            pygame.draw.rect(screen, (139, 0, 0), lava_rect)
             for i in niveau_actuelle:
                 i.affiche_plat(bleu_actif, screen)
             screen.blit(image, player_rect)
