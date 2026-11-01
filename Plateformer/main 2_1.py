@@ -69,10 +69,19 @@ controller = None
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
     controller.init()
-bouton_X = 2
-bouton_A = 0
-bouton_B = 1
-bouton_Y = 3
+# --- Constantes Xbox (pour teste) ---
+bouton_X = 2  # Sur Visi 301, c'est K3
+bouton_A = 0  # Sur Visi 301, c'est K1
+bouton_B = 1  # Sur Visi 301, c'est K2
+bouton_Y = 3  # Sur Visi 301, c'est K4
+
+# --- Constantes Visi 301 ---
+VISI_L2 = 4
+VISI_R2 = 5
+VISI_L1 = 6
+VISI_R1 = 7
+VISI_SELECT = 8
+VISI_START = 9
 
 # Définition des variables du jeu
 
@@ -178,16 +187,41 @@ while True:
             direct=0
             vitesse_x = 0
     else :
-        hat_x, hat_y = controller.get_hat(0)
-        if hat_x == -1:  # Croix vers la gauche
-            vitesse_x = -300 * dt
-            direct=2
-        elif hat_x == 1:  # Croix vers la droite
-            vitesse_x = 300 * dt
-            direct=1
-        else:
-            direct=0
+        mouvement_detecte = False
+        
+        # 1. Vérifier la croix directionnelle (Xbox de tests)
+        if controller.get_numhats() > 0:
+            hat_x, hat_y = controller.get_hat(0)
+            if hat_x == -1:
+                vitesse_x = -300 * dt
+                direct = 2
+                mouvement_detecte = True
+            elif hat_x == 1:
+                vitesse_x = 300 * dt
+                direct = 1
+                mouvement_detecte = True
+                
+        # 2. Vérifier les joysticks pour la Visi 301
+        if not mouvement_detecte and controller.get_numaxes() > 1:
+            tolerence = 0.5 
+            
+            # Axe 0 = Joystick X standard Xbox (tests)
+            # Axe 1 = Joystick Gauche/Droite de la Visi 301
+            axe_0 = controller.get_axis(0)
+            axe_1 = controller.get_axis(1)
+            if axe_1 < -tolerence or axe_0 < -tolerence:
+                vitesse_x = -300 * dt
+                direct = 2
+            elif axe_1 > tolerence or axe_0 > tolerence:
+                vitesse_x = 300 * dt
+                direct = 1
+            else:
+                vitesse_x = 0
+                direct = 0
+                
+        elif not mouvement_detecte:
             vitesse_x = 0
+            direct = 0       
     
     # --- AFFICHAGE ---
 
