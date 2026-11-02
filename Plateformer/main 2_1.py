@@ -55,7 +55,7 @@ def victory():
     screen.blit(text, text_rect)
 def fin_jeu():
     font = pygame.font.Font(None, 74)
-    text = font.render("Bravo vous avez finis le jeu !", True, (255, 255, 255))
+    text = font.render("Bravo vous avez fini le jeu !", True, (255, 255, 255))
     text_rect = text.get_rect(center=(512, 288))
     fond = pygame.Surface((1024, 576))
     fond.set_alpha(128)  # Transparence
