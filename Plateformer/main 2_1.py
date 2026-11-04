@@ -147,7 +147,7 @@ while True:
                     
         else : #Touches Manette générique
             if event.type == pygame.JOYBUTTONDOWN:
-                if event.button == bouton_A:
+                if event.button == bouton_A or  event.button == VISI_L2:
                     saut=10
                     # On vérifie si on touche un des obstacles solides
                     for obstacle in obstacles_solides:
