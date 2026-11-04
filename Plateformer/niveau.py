@@ -5,7 +5,7 @@ tableau_niveau= [
     "l":[150,150,150,150,150],
     "h":[20,20,20,20,20],
     "c":["bleu","bleu","rouge","rouge","jaune"],
-    "amovible":[False,False,False,False,False]},
+    "amovible":[False,False,False,True,False]},
     {
     "x": [150, 350, 550, 750, 850],
     "y": [450, 350, 250, 150, 50],
