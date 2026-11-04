@@ -1,7 +1,14 @@
 import pygame, sys, time
 from Plateforme import plateform
 from niveau import tableau_niveau
-
+#import ctypes # Pour récupérer la résolution de l'écran
+#user32 = ctypes.windll.user32
+#user32.SetProcessDPIAware()
+#hauteur = user32.GetSystemMetrics(1)
+#largeur = user32.GetSystemMetrics(0)
+#print(largeur, hauteur)
+#taille_ajustee = (largeur, hauteur)
+taille_originale = (1024, 576)
 
 # Commentaires et recommandations pour la suite du projet : 
 # - Bonne chose qu'on ait un proto fonctionnel, il faut continuer sur cette voie.
@@ -87,17 +94,15 @@ VISI_START = 9
 
 saut=0
 direct= 0
-screen = pygame.display.set_mode((1024, 576))
+screen = pygame.display.set_mode(taille_originale, pygame.SCALED | pygame.RESIZABLE | pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 dt = 0
 image = pygame.transform.scale(pygame.image.load("img/immobile.png").convert_alpha(), (80, 80))
 #textures et fond
-fond_img = pygame.transform.scale(pygame.image.load("img/fond.png").convert(), (1024, 576))
-sole_img = pygame.transform.scale(pygame.image.load("img/sole.png").convert_alpha(), (200, 50))
+fond_img = pygame.transform.scale(pygame.image.load("img/fond.png").convert(), taille_originale)
+sol_img = pygame.transform.scale(pygame.image.load("img/sol.png").convert_alpha(), (200, 50))
 lave_img = pygame.transform.scale(pygame.image.load("img/lave.png").convert_alpha(), (824, 50))
 tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png", "10": "img/immobile.png", "11": "img/saut_d.png", "12": "img/saut_g.png"}
-
-# TOUT CE QUI EST ICI DEVRA DISPARAITRE DANS LA VERSION FINALE, C'EST JUSTE POUR TESTER LE JEU
 
 # Les rectangles du sol
 spawn_floor_rect = pygame.Rect(0, 526, 200, 50)  
@@ -108,7 +113,6 @@ couleur_plat_actu ={"rouge" :[],"bleu": [], "jaune": []}
 for i in niveau_actuelle :
     i.cree_plat()
     couleur_plat_actu[i.get_couleur()].append(i.get_plat())
-# Jusqu'ici. À moins de s'en servir pour créer l'écran de start (éléments de déco, pourquoi pas...)
 
 # État du jeu : True = Bleu solide, False = Rouge solide
 bleu_actif = True 
@@ -229,7 +233,7 @@ while True:
     
     # --- AFFICHAGE ---
     screen.blit(fond_img, (0, 0))
-    screen.blit(sole_img, spawn_floor_rect.topleft)
+    screen.blit(sol_img, spawn_floor_rect.topleft)
     screen.blit(lave_img, lava_rect.topleft)
     
     
@@ -264,7 +268,7 @@ while True:
             
         else:
             screen.blit(fond_img, (0, 0))
-            screen.blit(sole_img, spawn_floor_rect.topleft)
+            screen.blit(sol_img, spawn_floor_rect.topleft)
             screen.blit(lave_img, lava_rect.topleft)
             for i in niveau_actuelle:
                 i.affiche_plat(bleu_actif, screen)
