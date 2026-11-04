@@ -237,8 +237,10 @@ while True:
     screen.blit(lave_img, lava_rect.topleft)
     
     
+    couleur_plat_actu ={"rouge" :[],"bleu": [], "jaune": []}
     for i in niveau_actuelle:
         i.affiche_plat(bleu_actif,screen)
+        couleur_plat_actu[i.get_couleur()].append(i.get_plat())
     # On dessine le joueur
 
     image = pygame.transform.scale(pygame.image.load(tab_pos[str(direct+saut)]).convert_alpha(), (80, 80))
