@@ -1,13 +1,6 @@
 import pygame, sys, time
 from Plateforme import plateform
 from niveau import tableau_niveau
-#import ctypes # Pour récupérer la résolution de l'écran
-#user32 = ctypes.windll.user32
-#user32.SetProcessDPIAware()
-#hauteur = user32.GetSystemMetrics(1)
-#largeur = user32.GetSystemMetrics(0)
-#print(largeur, hauteur)
-#taille_ajustee = (largeur, hauteur)
 taille_originale = (1024, 576)
 
 # Commentaires et recommandations pour la suite du projet : 
@@ -23,8 +16,16 @@ taille_originale = (1024, 576)
 # Création des plateformes (x, y, largeur, hauteur)
 def get_niveau(num_niv: int)-> list:
     tab= []
-    for i in range(len(tableau_niveau[num_niv]["x"])):
-        tab.append(plateform(tableau_niveau[num_niv]["x"][i],tableau_niveau[num_niv]["y"][i],tableau_niveau[num_niv]["l"][i],tableau_niveau[num_niv]["h"][i],tableau_niveau[num_niv]["c"][i],tableau_niveau[num_niv]["amovible"][i]))
+    for i in range(len(tableau_niveau[num_niv])):
+        for j in range(len(tableau_niveau[num_niv][i])):
+            plat = tableau_niveau[num_niv][i][j]
+            if plat != 0:
+                if plat[0] == "b":
+                    tab.append(plateform(j*64, i*64, plat[1], 20, "bleu", plat[2]))
+                elif plat[0] == "r":
+                    tab.append(plateform(j*64, i*64, plat[1], 20, "rouge", plat[2]))
+                elif plat[0] == "j":
+                    tab.append(plateform(j*64, i*64, plat[1], 20, "jaune", plat[2]))
     return tab
 
 def collisions_verticales(gravite):
@@ -143,7 +144,7 @@ while True:
                     # On vérifie si on touche un des obstacles solides
                     for obstacle in obstacles_solides:
                         # Si le joueur est aligné en Y et au-dessus en X
-                        if player_rect.bottom == obstacle.top and player_rect.right > obstacle.left and player_rect.left < obstacle.right:
+                        if player_rect.bottom <= obstacle.bottom and player_rect.bottom >= obstacle.top -10 and player_rect.right > obstacle.left and player_rect.left < obstacle.right:
                             gravite = -12
                             saut= 0
                             bleu_actif = not bleu_actif # Inverse l'état (True devient False, et inversement)
@@ -156,7 +157,7 @@ while True:
                     # On vérifie si on touche un des obstacles solides
                     for obstacle in obstacles_solides:
                     # Si le joueur est aligné en Y et au-dessus en X
-                        if player_rect.bottom == obstacle.top and player_rect.right > obstacle.left and player_rect.left < obstacle.right:
+                        if player_rect.bottom <= obstacle.bottom and player_rect.bottom >= obstacle.top -10 and player_rect.right > obstacle.left and player_rect.left < obstacle.right:
                             gravite = -12
                             bleu_actif = not bleu_actif # Inverse l'état (True devient False, et inversement)
                             saut = 0
@@ -251,7 +252,7 @@ while True:
     # Logique de victoire
 
     # Logique de victoire
-    if player_rect.bottom == couleur_plat_actu["jaune"][0].top:
+    if player_rect.bottom == couleur_plat_actu["jaune"][0].top and player_rect.right > couleur_plat_actu["jaune"][0].left and player_rect.left < couleur_plat_actu["jaune"][0].right:
         victory()
         pygame.display.update() 
         pygame.time.delay(2000) 
