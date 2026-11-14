@@ -21,11 +21,11 @@ def get_niveau(num_niv: int)-> list:
             plat = tableau_niveau[num_niv][i][j]
             if plat != 0:
                 if plat[0] == "b":
-                    tab.append(plateform(j*64, i*64, plat[1], 20, "bleu", plat[2]))
+                    tab.append(plateform(j*64, i*64, plat[1], 20, "bleu", plat[2],plat[3]))
                 elif plat[0] == "r":
-                    tab.append(plateform(j*64, i*64, plat[1], 20, "rouge", plat[2]))
+                    tab.append(plateform(j*64, i*64, plat[1], 20, "rouge", plat[2],plat[3]))
                 elif plat[0] == "j":
-                    tab.append(plateform(j*64, i*64, plat[1], 20, "jaune", plat[2]))
+                    tab.append(plateform(j*64, i*64, plat[1], 20, "jaune", plat[2],plat[3]))
     return tab
 
 def collisions_verticales(gravite):

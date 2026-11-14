@@ -1,19 +1,23 @@
 import pygame
 
 class plateform :
-    def __init__(self, x: int,y: int, largeur: int,hauteur: int, couleur: str, m_direction: str):
+    def __init__(self, x: int,y: int, largeur: int,hauteur: int, couleur: str, m_direction: str,m_lim: int):
         self.x = x
         self.y = y
         self.h = hauteur
         self.l = largeur
         self.c = couleur
-        self.m_lim= (-100,100)
+        self.m_lim= (-1*m_lim,m_lim)
         self.c_m= 0
         self.m_direction = m_direction #G = gauche, D = droite, H = haut, B = bas, N = pas de mouvement
+        if self.c == "bleu":
+            self.image = pygame.transform.scale(pygame.image.load("img/bleu.png").convert_alpha(), (self.l, self.h))
+        elif self.c == "rouge":
+            self.image = pygame.transform.scale(pygame.image.load("img/rouge.png").convert_alpha(), (self.l, self.h))
+        elif self.c == "jaune":
+            self.image = pygame.transform.scale(pygame.image.load("img/jaune.png").convert_alpha(), (self.l, self.h))
     def get_couleur(self):
         return self.c
-    def get_movible(self):
-        return self.m
     
     def cree_plat (self):
         if self.m_direction != "N":
@@ -34,16 +38,16 @@ class plateform :
             self.cree_plat()
         if self.c == "bleu" :
             if bleu_act:
-                pygame.draw.rect(ecran, (100, 150, 255), self.plat) # Pleine
+                ecran.blit(self.image, self.plat)
             else:
                 pygame.draw.rect(ecran, (100, 150, 255), self.plat, 2)
         elif self.c == "rouge": 
             if not bleu_act:
-                pygame.draw.rect(ecran, (255, 100, 100), self.plat) # Pleine
+                ecran.blit(self.image, self.plat)
             else:
                 pygame.draw.rect(ecran, (255, 100, 100), self.plat, 2) # Vide (juste le contour)
         else:
-            pygame.draw.rect(ecran, (255, 255, 100), self.plat)
+            ecran.blit(self.image, self.plat)
     def mouvement_movible(self):
         if self.m_direction == "G":
             self.x -= 1
