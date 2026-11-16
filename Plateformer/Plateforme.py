@@ -16,6 +16,7 @@ class plateform :
             self.image = pygame.transform.scale(pygame.image.load("img/rouge.png").convert_alpha(), (self.l, self.h))
         elif self.c == "jaune":
             self.image = pygame.transform.scale(pygame.image.load("img/jaune.png").convert_alpha(), (self.l, self.h))
+                
     def get_couleur(self):
         return self.c
     
