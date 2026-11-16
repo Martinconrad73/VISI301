@@ -12,10 +12,24 @@ taille_originale = (1024, 576)
 # le perso en est complètement détaché, de même que le reste.))
 # - Le code de la manette visi est dispo sur le wiki, il faut qu'on bosse dessus pour l'implémenter
 
-   
+# Initialisation
+
+def init_niveau():
+    global niveau_actuelle, couleur_plat_actu, player_rect, gravite, vitesse_x, bleu_actif, image
+    niveau_actuelle = get_niveau(num_niveau)
+    player_rect = image.get_rect(topleft=(50, 400)) #position initiale du joueur
+    gravite = 0
+    vitesse_x = 0
+    couleur_plat_actu = {"rouge": [], "bleu": [], "jaune": []}
+    for i in niveau_actuelle:
+        i.cree_plat()
+        couleur_plat_actu[i.get_couleur()].append(i.get_plat())
+    bleu_actif = True
+
 # Création des plateformes (x, y, largeur, hauteur)
+
 def get_niveau(num_niv: int)-> list:
-    tab= []
+    tab = []
     for i in range(len(tableau_niveau[num_niv])):
         for j in range(len(tableau_niveau[num_niv][i])):
             plat = tableau_niveau[num_niv][i][j]
@@ -32,24 +46,29 @@ def collisions_verticales(gravite):
     for obstacle in obstacles_solides:
         if player_rect.colliderect(obstacle):
             # Si le joueur tombe (mouvement vers le bas)
+
             if gravite > 0: 
                 player_rect.bottom = obstacle.top
                 gravite = 0 # Stoppe la chute pour le faire rester sur la plateforme
                 
             # Si le joueur saute et tape sa tête (mouvement vers le haut)
+
             elif gravite < 0: 
                 player_rect.top = obstacle.bottom
                 gravite = 0 # Stoppe l'ascension pour le faire retomber
-    return gravite #Il est nécessaire de retourner gravité car elle est modifiée dans la fonction. (C'est pas une procédure avec une valeur in out, merci ADA)
+    return gravite # Il est nécessaire de retourner gravité car elle est modifiée dans la fonction.
 
-def collisions_horizontales(vitesse_x):
-    for obstacle in obstacles_solides:
+def collisions_horizontales(vitesse_x: float):
+    for obstacle in obstacles_solides: # obstacle est un rect de la liste obstacles_solides, donc impossible d'utiliser get_plat() ici, car c'est une fonction de la classe plateform. On ne peut pas l'utiliser sur un rect.
         if player_rect.colliderect(obstacle):
+
             # Si on va vers la droite, on tape le mur par la gauche de l'obstacle
+
             if vitesse_x > 0:
                 player_rect.right = obstacle.left
             
             # Si on va vers la gauche, on tape le mur par la droite de l'obstacle
+
             elif vitesse_x < 0:
                 player_rect.left = obstacle.right # Il n'est pas nécessaire de retourner vitesse_x, car on ne la modifie pas.
 
@@ -61,6 +80,7 @@ def victory():
     fond.set_alpha(128)  # Transparence
     screen.blit(fond, (0, 0))
     screen.blit(text, text_rect)
+
 def fin_jeu():
     font = pygame.font.Font(None, 74)
     text = font.render("Bravo vous avez fini le jeu !", True, (255, 255, 255))
@@ -69,6 +89,7 @@ def fin_jeu():
     fond.set_alpha(128)  # Transparence
     screen.blit(fond, (0, 0))
     screen.blit(text, text_rect)
+
 # Initialisation de Pygame et création de la fenêtre
 
 pygame.init()
@@ -77,13 +98,16 @@ controller = None
 if pygame.joystick.get_count() > 0:
     controller = pygame.joystick.Joystick(0)
     controller.init()
-# --- Constantes Xbox (pour teste) ---
+
+# --- Constantes Xbox (pour test) ---
+
 bouton_X = 2  # Sur Visi 301, c'est K3
 bouton_A = 0  # Sur Visi 301, c'est K1
 bouton_B = 1  # Sur Visi 301, c'est K2
 bouton_Y = 3  # Sur Visi 301, c'est K4
 
 # --- Constantes Visi 301 ---
+
 VISI_L2 = 4
 VISI_R2 = 5
 VISI_L1 = 6
@@ -99,32 +123,34 @@ screen = pygame.display.set_mode(taille_originale, pygame.SCALED | pygame.RESIZA
 clock = pygame.time.Clock()
 dt = 0
 image = pygame.transform.scale(pygame.image.load("img/immobile.png").convert_alpha(), (80, 80))
-#textures et fond
+
+# Textures et fond
+
 fond_img = pygame.transform.scale(pygame.image.load("img/fond.png").convert(), taille_originale)
 sol_img = pygame.transform.scale(pygame.image.load("img/sol.png").convert_alpha(), (200, 50))
 lave_img = pygame.transform.scale(pygame.image.load("img/lave.png").convert_alpha(), (824, 50))
 tab_pos = {"0" : "img/immobile.png", "1": "img/droite.png", "2": "img/gauche.png", "10": "img/immobile.png", "11": "img/saut_d.png", "12": "img/saut_g.png"}
 
 # Les rectangles du sol
+
 spawn_floor_rect = pygame.Rect(0, 526, 200, 50)  
 lava_rect = pygame.Rect(200, 526, 824, 50)
 num_niveau=0
-niveau_actuelle = get_niveau(num_niveau)
-couleur_plat_actu ={"rouge" :[],"bleu": [], "jaune": []}
-for i in niveau_actuelle :
-    i.cree_plat()
-    couleur_plat_actu[i.get_couleur()].append(i.get_plat())
+init_niveau() # On initialise le niveau 0
 
 # État du jeu : True = Bleu solide, False = Rouge solide
+
 bleu_actif = True 
 
-player_rect = image.get_rect(topleft=(50, 400))
 gravite = 0
 vitesse_x = 0
 
 while True:
+
     # 1. DÉFINITION DES OBSTACLES ACTIFS
+
     # On crée une liste contenant le sol + la couleur actuellement active
+
     obstacles_solides = [spawn_floor_rect, couleur_plat_actu["jaune"][0]]
     if bleu_actif:
         obstacles_solides.extend(couleur_plat_actu["bleu"])
@@ -142,8 +168,11 @@ while True:
                     saut=10
                     
                     # On vérifie si on touche un des obstacles solides
+
                     for obstacle in obstacles_solides:
+
                         # Si le joueur est aligné en Y et au-dessus en X
+
                         if player_rect.bottom <= obstacle.bottom and player_rect.bottom >= obstacle.top -10 and player_rect.right > obstacle.left and player_rect.left < obstacle.right:
                             gravite = -12
                             saut= 0
@@ -151,22 +180,30 @@ while True:
                             break # On arrête de chercher, on a trouvé le sol
                     
         else : #Touches Manette générique
+
             if event.type == pygame.JOYBUTTONDOWN:
                 if event.button == bouton_A or  event.button == VISI_L2:
                     saut=10
+
                     # On vérifie si on touche un des obstacles solides
+
                     for obstacle in obstacles_solides:
+                        
                     # Si le joueur est aligné en Y et au-dessus en X
+
                         if player_rect.bottom <= obstacle.bottom and player_rect.bottom >= obstacle.top -10 and player_rect.right > obstacle.left and player_rect.left < obstacle.right:
                             gravite = -12
                             bleu_actif = not bleu_actif # Inverse l'état (True devient False, et inversement)
                             saut = 0
                             break # On arrête de chercher, on a trouvé le sol
-    #detection d'une colision avec la lave
+
+    # Détection d'une colision avec la lave
+
     if player_rect.colliderect(lava_rect):
         player_rect.topleft = (50, 400)
         gravite = 0
         vitesse_x = 0
+
     # --- LOGIQUE DE MOUVEMENT ---
     
     gravite += 0.5 
@@ -199,6 +236,7 @@ while True:
         mouvement_detecte = False
         
         # 1. Vérifier la croix directionnelle (Xbox de tests)
+
         if controller.get_numhats() > 0:
             hat_x, hat_y = controller.get_hat(0)
             if hat_x == -1:
@@ -211,11 +249,13 @@ while True:
                 mouvement_detecte = True
                 
         # 2. Vérifier les joysticks pour la Visi 301
+
         if not mouvement_detecte and controller.get_numaxes() > 1:
             tolerence = 0.5 
             
             # Axe 0 = Joystick X standard Xbox (tests)
             # Axe 1 = Joystick Gauche/Droite de la Visi 301
+
             axe_0 = controller.get_axis(0)
             axe_1 = controller.get_axis(1)
             if axe_1 < -tolerence or axe_0 < -tolerence:
@@ -233,6 +273,7 @@ while True:
             direct = 0       
     
     # --- AFFICHAGE ---
+
     screen.blit(fond_img, (0, 0))
     screen.blit(sol_img, spawn_floor_rect.topleft)
     screen.blit(lave_img, lava_rect.topleft)
@@ -242,6 +283,7 @@ while True:
     for i in niveau_actuelle:
         i.affiche_plat(bleu_actif,screen)
         couleur_plat_actu[i.get_couleur()].append(i.get_plat())
+
     # On dessine le joueur
 
     image = pygame.transform.scale(pygame.image.load(tab_pos[str(direct+saut)]).convert_alpha(), (80, 80))
@@ -251,7 +293,6 @@ while True:
 
     # Logique de victoire
 
-    # Logique de victoire
     if player_rect.bottom == couleur_plat_actu["jaune"][0].top and player_rect.right > couleur_plat_actu["jaune"][0].left and player_rect.left < couleur_plat_actu["jaune"][0].right:
         victory()
         pygame.display.update() 
@@ -259,15 +300,7 @@ while True:
         
         if len(tableau_niveau) > num_niveau + 1:
             num_niveau += 1
-            niveau_actuelle = get_niveau(num_niveau)
-            player_rect.topleft = (50, 400)
-            gravite = 0
-            vitesse_x = 0
-            couleur_plat_actu = {"rouge": [], "bleu": [], "jaune": []}
-            for i in niveau_actuelle :
-                i.cree_plat()
-                couleur_plat_actu[i.get_couleur()].append(i.get_plat())
-            bleu_actif = True 
+            init_niveau()
             
         else:
             screen.blit(fond_img, (0, 0))

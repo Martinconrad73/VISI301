@@ -17,9 +17,6 @@ class plateform :
         elif self.c == "jaune":
             self.image = pygame.transform.scale(pygame.image.load("img/jaune.png").convert_alpha(), (self.l, self.h))
                 
-    def get_couleur(self):
-        return self.c
-    
     def cree_plat (self):
         if self.m_direction != "N":
             if self.m_direction == "G" and self.c_m == self.m_lim[0]:
@@ -32,8 +29,13 @@ class plateform :
                 self.m_direction = "H"
             self.mouvement_movible()
         self.plat = pygame.Rect(self.x, self.y, self.l, self.h)
+
+    def get_couleur(self):
+        return self.c
+    
     def get_plat(self):
         return self.plat
+    
     def affiche_plat(self,bleu_act : bool,ecran):
         if self.m_direction != "N":
             self.cree_plat()
@@ -49,6 +51,7 @@ class plateform :
                 pygame.draw.rect(ecran, (255, 100, 100), self.plat, 2) # Vide (juste le contour)
         else:
             ecran.blit(self.image, self.plat)
+
     def mouvement_movible(self):
         if self.m_direction == "G":
             self.x -= 1
