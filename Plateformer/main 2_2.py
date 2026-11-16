@@ -186,10 +186,10 @@ while True:
 
     if controller is None : 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_q]:
+        if keys[pygame.K_LEFT]:
             direct=2
             vitesse_x = -300 * dt
-        elif keys[pygame.K_d]:
+        elif keys[pygame.K_RIGHT]:
             direct=1
             vitesse_x = 300 * dt
         else:
